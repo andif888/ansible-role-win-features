@@ -1,0 +1,41 @@
+---
+# tasks file for ansible-role-win-features
+- name: Windows Features to add
+  ansible.windows.win_feature:
+    name: '{{ item.name }}'
+    include_management_tools: "{{ item.include_management_tools | default(omit) }}"
+    include_sub_features: "{{ item.include_sub_features | default(omit) }}"   
+    state: present
+  register: result_win_features_add
+  loop: "{{ win_feature_list_add }}"
+  when: win_feature_list_add | length > 0
+
+- name: Reboot if windows features require it after adding
+  ansible.windows.win_reboot:
+    post_reboot_delay: 180
+    pre_reboot_delay: 5
+  when:
+    - win_feature_reboot_when_required
+    - result_win_features_add is defined
+    - result_win_features_add.results is defined
+    - result_win_features_add.results | length > 0
+    - result_win_features_add.results | selectattr('reboot_required', 'equalto', true)
+
+- name: Windows Features to remove
+  ansible.windows.win_feature:
+    name: '{{ item }}' 
+    state: absent
+  register: result_win_features_remove
+  loop: "{{ win_feature_list_remove }}"
+  when: win_feature_list_remove | length > 0
+
+- name: Reboot if windows features require it after removing
+  ansible.windows.win_reboot:
+    post_reboot_delay: "{{ win_feature_post_reboot_delay }}"
+    pre_reboot_delay: "{{ win_feature_pre_reboot_delay }}"
+  when:
+    - win_feature_reboot_when_required
+    - result_win_features_remove is defined
+    - result_win_features_remove.results is defined
+    - result_win_features_remove.results | length > 0
+    - result_win_features_remove.results | selectattr('reboot_required', 'equalto', true)

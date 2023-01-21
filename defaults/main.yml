@@ -1,0 +1,29 @@
+---
+# defaults file for ansible-role-win-features
+
+# @var win_feature_list_add:description: list of windows features to be installed
+# @var win_feature_list_add:example: >
+# win_feature_list_add
+#   - name: "AD-Domain-Services"
+#     include_management_tools: true
+#     include_sub_features: true
+#   - name: "FS-FileServer"
+# @end
+win_feature_list_add: []
+
+# @var win_feature_list_remove:description: list of windows features to be uninstalled
+# @var win_feature_list_remove:example: >
+# win_feature_list_remove
+#   - "AD-Domain-Services"
+#   - "FS-FileServer"
+# @end
+win_feature_list_remove: []
+
+# @var win_feature_reboot_when_required:description: Automatically reboot when a Windows feature requires it
+win_feature_reboot_when_required: true
+
+# @var win_feature_post_reboot_delay:description: Wait number of seconds after reboot to continue
+win_feature_post_reboot_delay: 30
+
+# @var win_feature_pre_reboot_delay:description: Wait number of seconds before rebooting
+win_feature_pre_reboot_delay: 5
